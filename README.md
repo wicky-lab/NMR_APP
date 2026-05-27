@@ -1,9 +1,7 @@
 # nmr_app_utilities
 
 Code and metadata accompanying the *NMR APP* paper. The repository contains the analysis pipeline,
-design-time launch configurations, and a `data/` directory with both local artefacts and
-pointers to larger externally-deposited data.
-
+design-time launch configurations.
 ## Repository layout
 
 ```
