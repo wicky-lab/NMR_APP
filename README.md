@@ -28,27 +28,21 @@ nmr_app_utilities/
 │   ├── rfdiffusion.md
 │   ├── proteina.md
 │   └── foldseek.sh
-└── data/
-    ├── MANIFEST.md            # catalogue of all data items + retrieval pointers
+└── deposit/data # on zenodo
     ├── all_metrics_and_exp_results.csv   # combined dry- + wet-lab table (one row per design)
-    ├── model_ensembles.tar.zst           # flattened prediction ensembles
-    ├── designable/            # top-ranked CIF structures (ptm > 0.70, RMSD_ca < 2.0)
-    ├── non_designable/        # remaining CIF structures
     ├── drylab/                # dry-lab artefacts
-    │   ├── boltz2rank_scores/ # Boltz2Rank confidence JSONs + pLDDT npz files
     │   ├── design_metrics/    # boltz_metrics_designs.csv, dssp.csv
-    │   ├── dssp/
+    │   ├── dssp/              # per-design DSSP outputs 
     │   ├── ensemble_metrics/  # combined_dynamics_metrics.csv + per-source pLDDT/RMSF CSVs
-    │   └── raw_designs/       # metrics.parquet, designable.tar.zst, non_designable.tar.zst
+    │   └── raw_designs/       # metrics.parquet, designable.tar.zst, non_designable.tar.zst. Raw generated designs
     └── wetlab/                # wet-lab artefacts (NMR + SEC/expression)
 ```
 
 ## Quick start (reviewers)
 
-1. **Get the data.** Bulk inputs live outside the repo. See `data/MANIFEST.md`
-   for the Zenodo DOI, BMRB ID and the wet-lab raw-data location. Unpack
-   the Zenodo deposit into a local directory — everything under `deposit/data/`
-   maps directly to the layout `analysis_scripts/config.py` expects.
+1. **Get the data.** Download and unpack the Zenodo deposit into a local
+   directory. The deposit layout maps directly to what `analysis_scripts/config.py`
+   expects.
 
 2. **Tell the code where the data lives.**
 
@@ -93,4 +87,6 @@ nmr_app_utilities/
 
 ## Deposit workflow (maintainers)
 
-The Zenodo deposit is assembled from `data/` and checked into `deposit/`.
+The Zenodo deposit lives separately from this repo. The `deposit/MANIFEST_zenodo.csv`
+catalogues every file in the deposit. After adding or updating data files under
+`deposit/data/`, re-upload to Zenodo and update the DOI in the manifest.
