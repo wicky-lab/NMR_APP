@@ -8,8 +8,6 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import os
 import re
-import json
-from glob import glob
 
 import sys
 from pathlib import Path as _Path
@@ -21,7 +19,6 @@ from config import (
     EXPRESSION_METRICS_CSV,
     DSSP_CSV,
     COMBINED_DYNAMICS_CSV,
-    BOLTZ2RANK_PATH,
     OUTPUTS_DIR,
 )
 
@@ -41,18 +38,6 @@ expression_metrics = pd.read_csv(EXPRESSION_METRICS_CSV)
 
 dssp_csv = pd.read_csv(DSSP_CSV)
 ensemble_metrics = pd.read_csv(COMBINED_DYNAMICS_CSV)
-
-# Load Boltz2Rank pTM scores
-rank_files = glob(f"{BOLTZ2RANK_PATH}/**/*.json", recursive=True)
-ptms = []
-file_names = []
-for file in rank_files:
-    with open(file, "r") as f:
-        data = json.load(f)
-        ptms.append(data["ptm"])
-        # Use the parent directory name as the design identifier
-        file_names.append(os.path.basename(os.path.dirname(file)))
-rank_df = pd.DataFrame({"file_name": file_names, "boltz2rank_ptm": ptms})
 
 # %%
 # =============================================================================
@@ -208,9 +193,6 @@ df["max_loop_length"] = df["dssp_string"].apply(max_loop_length)
 
 df = df.merge(ensemble_metrics, left_on="design_name", right_on="folder_name", how="left")
 
-# Merge Boltz2Rank pTM scores
-df = df.merge(rank_df, left_on="design_name", right_on="file_name", how="left")
-
 # %%
 # =============================================================================
 # QUALITY FILTERING
@@ -281,7 +263,6 @@ computational_metrics = [
     'mean_plddt_boltz2_recycle_3',
     'mean_plddt_af3_recycle_0',
     'mean_plddt_af3_recycle_3',
-    'boltz2rank_ptm',
 ]
 
 # Filter to only existing columns
@@ -565,8 +546,6 @@ COMP_METRIC_NAME_MAP = {
     'mean_plddt_af3_recycle_0': 'AF3 pLDDT (r0, ensemble mean)',
     'mean_plddt_af3_recycle_3': 'AF3 pLDDT (r3, ensemble mean)',
     
-    # Boltz2Rank
-    'boltz2rank_ptm': 'Boltz2Rank pTM',
 }
 # NMR metric categories
 NMR_CATEGORIES = {
@@ -630,7 +609,6 @@ COMP_CATEGORIES = {
     'min_plddt_af3_recycle_3': 'confidence',
     'comp_ptm': 'confidence',
     'comp_ptm_var': 'confidence',
-    'boltz2rank_ptm': 'confidence',
     'plddt_drop': 'confidence',
     
     # Flexibility metrics

@@ -25,7 +25,7 @@ from typing import Dict, List, Optional, Tuple
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
-from config import METRICS_PATH, BOLTZ2RANK_PATH, RELAXATION_DIR, ALL_METRICS_AND_EXP_RESULTS_CSV, OUTPUTS_DIR
+from config import METRICS_PATH, RELAXATION_DIR, ALL_METRICS_AND_EXP_RESULTS_CSV, OUTPUTS_DIR
 
 RELAX_OUT = OUTPUTS_DIR / "relaxation"
 RELAX_OUT.mkdir(parents=True, exist_ok=True)
@@ -98,10 +98,7 @@ COMP_METRIC_NAME_MAP = {
     'rmsf_boltz1_recycle_3': 'Boltz-1 RMSF (r3)',
     'rmsf_boltz2_recycle_0': 'Boltz-2 RMSF (r0)',
     'rmsf_boltz2_recycle_3': 'Boltz-2 RMSF (r3)',
-        
-    # Boltz2Rank
-    'plddt_boltz2rank': 'Boltz2Rank pLDDT (per-residue)',
-    
+
     # Ensemble metrics
     'mean_plddt_all': 'Mean pLDDT (all)',
     'max_plddt_all': 'Max pLDDT (all)',
@@ -137,7 +134,6 @@ COMP_CATEGORIES = {
     'plddt_boltz1_recycle_3': 'confidence',
     'plddt_boltz2_recycle_0': 'confidence',
     'plddt_boltz2_recycle_3': 'confidence',
-    'plddt_boltz2rank': 'confidence',
     'mean_plddt_all': 'confidence',
     'max_plddt_all': 'confidence',
     'min_plddt_all': 'confidence',
@@ -336,30 +332,6 @@ def load_rmsf_metrics(metrics_dir: Path = METRICS_PATH):
     return rmsf_data
 
 
-def load_boltz2rank_plddt(predictions_dir: Path = BOLTZ2RANK_PATH):
-    """Load per-residue pLDDT scores from Boltz2Rank prediction npz files.
-    
-    Each prediction folder contains a plddt_*.npz file with key 'plddt'
-    holding a 1D array of per-residue pLDDT values (shape N_residues).
-    """
-    all_rows = []
-    
-    for npz_file in sorted(predictions_dir.glob("*/plddt_*.npz")):
-        folder_name = npz_file.parent.name
-        data = np.load(npz_file)
-        plddt_arr = data["plddt"]
-        
-        for res_idx, plddt_val in enumerate(plddt_arr):
-            all_rows.append({
-                "folder_name": folder_name,
-                "residue_id": res_idx,
-                "plddt_boltz2rank": float(plddt_val),
-            })
-    
-    df = pd.DataFrame(all_rows)
-    print(f"Loaded Boltz2Rank pLDDT: {len(df)} residue entries from {df['folder_name'].nunique()} designs")
-    return df
-
 
 def merge_all_metrics(nmr_df):
     """Merge all confidence metrics with NMR data."""
@@ -385,15 +357,6 @@ def merge_all_metrics(nmr_df):
         rmsf_df["residue_id"] = rmsf_df["residue_id"] + MSG_TAG_OFFSET
         df = df.merge(rmsf_df, left_on=["folder", "Residue ID"],
                       right_on=["folder_name", "residue_id"], how="left", suffixes=('', f'_{source}'))
-        df = df.drop(columns=[c for c in df.columns if c.startswith('folder_name') or c.startswith('residue_id_')], errors='ignore')
-
-    # Merge Boltz2Rank per-residue pLDDT
-    boltz2rank_plddt = load_boltz2rank_plddt()
-    if len(boltz2rank_plddt) > 0:
-        boltz2rank_plddt = boltz2rank_plddt.copy()
-        boltz2rank_plddt["residue_id"] = boltz2rank_plddt["residue_id"] + MSG_TAG_OFFSET
-        df = df.merge(boltz2rank_plddt, left_on=["folder", "Residue ID"],
-                      right_on=["folder_name", "residue_id"], how="left", suffixes=('', '_boltz2rank'))
         df = df.drop(columns=[c for c in df.columns if c.startswith('folder_name') or c.startswith('residue_id_')], errors='ignore')
 
     plddt_cols = [col for col in df.columns if col.startswith('plddt_')]

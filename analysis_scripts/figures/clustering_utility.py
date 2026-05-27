@@ -108,10 +108,11 @@ def main() -> None:
         (ptm_sampled,    "pTM-Based\nSampling",         "#3498db"),
     ]
 
+    all_metrics_clean = all_metrics.dropna(subset=["frac_helix", "frac_sheet", "frac_coil"])
     all_x, all_y = ternary_coords(
-        all_metrics["frac_helix"].values,
-        all_metrics["frac_sheet"].values,
-        all_metrics["frac_coil"].values,
+        all_metrics_clean["frac_helix"].values,
+        all_metrics_clean["frac_sheet"].values,
+        all_metrics_clean["frac_coil"].values,
     )
     np.random.seed(42)
     downsample_mask = np.random.random(len(all_x)) < 0.7
@@ -127,14 +128,15 @@ def main() -> None:
         ax.scatter(all_x_ds, all_y_ds, c="lightgray", s=5, alpha=0.3,
                    zorder=1, rasterized=True, clip_on=False)
 
+        df_valid = df.dropna(subset=["frac_helix", "frac_sheet", "frac_coil"])
         x, y = ternary_coords(
-            df["frac_helix"].values, df["frac_sheet"].values, df["frac_coil"].values,
+            df_valid["frac_helix"].values, df_valid["frac_sheet"].values, df_valid["frac_coil"].values,
         )
         if len(x) > 2:
             try:
                 kde = gaussian_kde(np.vstack([x, y]), bw_method=0.15)
                 density = kde(np.vstack([x, y]))
-            except np.linalg.LinAlgError:
+            except (np.linalg.LinAlgError, ValueError):
                 density = np.ones(len(x))
         else:
             density = np.ones(len(x))
