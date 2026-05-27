@@ -1,0 +1,33 @@
+name: nmr-paper
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+
+  # Core numerics / dataframes
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+
+  # Parquet / HDF5 IO
+  - fastparquet
+  - pyarrow
+  - h5py
+  - pytables          # pandas.read_hdf
+  - openpyxl          # for any .xlsx in relaxation_data/
+
+  # Structure / sequence handling
+  - biotite
+
+  # Plotting
+  - matplotlib
+  - seaborn
+  - plotly
+  - python-kaleido    # static image export for plotly (PNG/SVG)
+
+  # Ternary plots (dssp figure scripts)
+  - pip
+  - pip:
+    - python-ternary
