@@ -11,7 +11,7 @@ outputs into the publication figures and supporting tables. Two stages:
 
 All paths are resolved by `config.py` from the `NMR_PAPER_DATA` environment
 variable. No script has hard-coded user-specific paths — point that env var
-at the unpacked data root (see `data/MANIFEST.md`) and everything works:
+at the unpacked data root (see `deposit/MANIFEST_zenodo.csv`) and everything works:
 
 ```bash
 export NMR_PAPER_DATA=/path/to/data
@@ -116,7 +116,7 @@ Notebook-style script (`# %%` cells) that:
 
 ### `figures/make_hsqc_correlation_figure.py`
 HSQC correlation pipeline. Loads HSQC summary + peak lists, expression
-metrics, DSSP, the per-design dynamics aggregate, and Boltz2Rank pTM JSONs.
+metrics, DSSP, and the per-design dynamics aggregate.
 Derives per-design NMR observables (linewidths, dispersion, peak count,
 intensity CV, etc.), merges with computational metrics, applies the
 spectral-quality + intensity-outlier filters, and renders:
@@ -126,7 +126,7 @@ spectral-quality + intensity-outlier filters, and renders:
 - `outputs/hsqc/nmr_comp_correlations/<observable>_correlations.html` (interactive scatter per observable)
 
 ### `figures/make_relaxation_figures.py`
-Per-residue R₁ / R₂ / HetNOE correlated against every pLDDT / RMSF / Boltz2Rank
+Per-residue R₁ / R₂ / HetNOE correlated against every pLDDT / RMSF
 source via linear regression. Reads the per-source per-residue CSVs from
 `ensemble_metrics/` (so all six source × recycle columns appear in the heatmap).
 
@@ -236,7 +236,7 @@ required by the two DSSP figure scripts.
 ## Reproducing the figures (for reviewers)
 
 Assumes the data deposit is unpacked at `$NMR_PAPER_DATA/` with the layout
-described in `data/MANIFEST.md`.
+described in `deposit/MANIFEST_zenodo.csv`.
 
 ### 1. Environment
 
@@ -323,6 +323,5 @@ annotations).
 
 ## Data inputs catalogue
 
-See `../data/MANIFEST.md` for the full per-file catalogue (paths, sizes,
-sha256s) and the Zenodo / BMRB record IDs for everything not shipped in
-this repo.
+See `../deposit/MANIFEST_zenodo.csv` for the sha256 of `data.tar.zst`
+(the single archive uploaded to Zenodo).

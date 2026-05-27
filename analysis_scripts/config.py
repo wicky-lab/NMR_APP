@@ -45,14 +45,6 @@ DSSP_ALL_DESIGNS_DIR = DSSP_DIR / "all_designs"      # per-design .parquet files
 DSSP_PDB_DIR = DSSP_DIR / "pdb"                      # natural-protein reference set
 MMSEQS_CLUSTER_TSV = DSSP_DIR / "mmseqs_result_cluster.tsv"
 
-BOLTZ2RANK_PATH = (
-    DRYLAB_DIR
-    / "boltz2rank_scores"
-    / "ranking_results"
-    / "boltz_results_yamls"
-    / "predictions"
-)
-
 # --- wetlab ----------------------------------------------------------------
 
 WETLAB_DIR = DATA_ROOT / "wetlab"

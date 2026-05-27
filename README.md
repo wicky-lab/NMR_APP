@@ -40,14 +40,20 @@ nmr_app_utilities/
 
 ## Quick start (reviewers)
 
-1. **Get the data.** Download and unpack the Zenodo deposit into a local
-   directory. The deposit layout maps directly to what `analysis_scripts/config.py`
-   expects.
+1. **Get the data.** Download `data.tar.zst` from the Zenodo deposit and
+   unpack it:
+
+   ```bash
+   tar --use-compress-program=zstd -xf data.tar.zst
+   ```
+
+   This produces a `data/` directory whose layout matches what
+   `analysis_scripts/config.py` expects.
 
 2. **Tell the code where the data lives.**
 
    ```bash
-   export NMR_PAPER_DATA=/path/to/deposit/data
+   export NMR_PAPER_DATA=/path/to/extracted/data
    ```
 
    When unset, `config.py` falls back to `~/Desktop/nmr_revelations_paper/data`.
